@@ -1,8 +1,19 @@
 require 'test/unit'
 
-task default: :sub_class_test_verbose_mode
+desc 'auto runnder collector load(default)'
+task :collector_load do
+  test_dir = File.join(__dir__, 'test')
+  auto_runner_opts = [
+    '--verbose',
+  ]
+  
+  Test::Unit::AutoRunner.run(true, test_dir, auto_runner_opts)
+end
 
-task :sub_class_test_verbose_mode do
+task default: :collector_descendant
+
+desc 'auto runner collector descendant'
+task :collector_descendant do
   auto_runner_opts = [
     '--verbose',
     '--collector=descendant',
@@ -11,12 +22,12 @@ task :sub_class_test_verbose_mode do
   Test::Unit::AutoRunner.run(true, nil, auto_runner_opts) do
     test_dir = File.join(__dir__, 'test')
     
-    Dir.glob(File.join(test_dir, '**/*_test.rb')) do |test_file|
-      require test_file
+    Dir.glob(File.join(test_dir, '**/*.rb')) do |f|
+      require f
     end
-    
-    puts '---- DESCENDANTS from TestCase class ----'
-    puts Test::Unit::TestCase::DESCENDANTS
-    puts '-----------------------------------------'
+
+    # puts '---- DESCENDANTS from TestCase class ----'
+    # puts Test::Unit::TestCase::DESCENDANTS
+    # puts '-----------------------------------------'
   end
 end
